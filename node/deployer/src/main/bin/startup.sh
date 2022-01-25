@@ -95,12 +95,18 @@ esac
 
 str=`file $JAVA | grep 64-bit`
 if [ -n "$str" ]; then
-	JAVA_OPTS="-server -Xms2048m -Xmx3072m -Xmn1024m -XX:SurvivorRatio=2 -XX:PermSize=96m -XX:MaxPermSize=256m -Xss256k -XX:-UseAdaptiveSizePolicy -XX:MaxTenuringThreshold=15 -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSCompactAtFullCollection -XX:+UseFastAccessorMethods -XX:+UseCMSInitiatingOccupancyOnly -XX:+HeapDumpOnOutOfMemoryError"
+	if [[ ! $JAVA_NODE_MEM_OPTS ]]; then
+		JAVA_NODE_MEM_OPTS="-Xms2048m -Xmx3072m -Xmn1024m"
+	fi
+	JAVA_OPTS="-server -XX:SurvivorRatio=2 -XX:PermSize=96m -XX:MaxPermSize=256m -Xss256k -XX:-UseAdaptiveSizePolicy -XX:MaxTenuringThreshold=15 -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSCompactAtFullCollection -XX:+UseFastAccessorMethods -XX:+UseCMSInitiatingOccupancyOnly -XX:+HeapDumpOnOutOfMemoryError"
 else
-	JAVA_OPTS="-server -Xms1024m -Xmx1024m -XX:NewSize=256m -XX:MaxNewSize=256m -XX:MaxPermSize=128m "
+	if [[ ! $JAVA_NODE_MEM_OPTS ]]; then
+		JAVA_NODE_MEM_OPTS="-Xms1024m -Xmx1024m"
+	fi
+	JAVA_OPTS="-server -XX:NewSize=256m -XX:MaxNewSize=256m -XX:MaxPermSize=128m "
 fi
 
-JAVA_OPTS=" $JAVA_OPTS -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8"
+JAVA_OPTS=" $JAVA_NODE_MEM_OPTS $JAVA_OPTS -Djava.awt.headless=true -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF-8"
 OTTER_OPTS="-DappName=otter-node -Ddubbo.application.logger=slf4j -Dlogback.configurationFile=$logback_configurationFile -Dnid=$(cat $otterNodeIdFile)"
 
 if [ -e $otterNodeIdFile -a -e $logback_configurationFile ]

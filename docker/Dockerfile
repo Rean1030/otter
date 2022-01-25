@@ -1,6 +1,6 @@
 FROM canal/otter-osbase:v1
 
-MAINTAINER agapple (jianghang115@gmail.com)
+LABEL maintainer="wangyl"
 
 # install otter
 COPY image/ /tmp/docker/
